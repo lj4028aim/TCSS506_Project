@@ -1,17 +1,52 @@
-{% extends "base.html" %}
-{% block content %}
-<div class="container-sm">
-  <form class="row g-3" method="post">
-      {{ form.csrf_token }}
-      <div class="col-auto">
-        {{form.email(class="form-control")}}
-        <small id="emailHelpId" class="form-text text-muted">Enter username</small>
-      </div>
-      <div class="col-auto">
-        {{form.password(class="form-control")}}
-        <small id="passwordHelpId" class="form-text text-muted">Enter password</small>
-      </div>
-      <div class="col-auto"><button type="submit" class="btn btn-primary">Submit</button></div>
-  </form>        
-</div>
-{% endblock content %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+    <!-- Custom CSS -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat&display=swap');
+
+        :root {
+            --dark1: #121212;
+            --body: #121212;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--body)
+        }
+
+
+    </style>
+    <title>Weather Music App</title>
+  </head>
+  <body>
+    <main>
+        <!-- Login Section -->
+        <div class="d-flex" style="height:100vh">
+            <section class="w-100 m-auto p-3 text-center" style="max-width:330px;">
+                <form method="post">
+                    <img class="mb-4" src="https://getbootstrap.com/docs/4.0/assets/brand/bootstrap-solid.svg" alt="" width="72" height="72">
+                    <h1 class="h3 mb-3 font-weight-normal text-white">Please sign in</h1>
+                    <div class="text-start text-secondary">
+                        <label for="inputEmail" class="sr-only">Email address</label>
+                        <input type="email" id="inputEmail" class="form-control mb-3" placeholder="Email address" required="" autofocus="">
+                        <label for="inputPassword" class="sr-only">Password</label>
+                        <input type="password" id="inputPassword" class="form-control mb-3" placeholder="Password" required="">
+                    </div>
+                    <button class="btn btn-md btn-primary btn-block w-100 mt-2" type="submit">Sign in</button>
+                </form>
+            </section>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+  </body>
+</html>
