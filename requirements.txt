@@ -1,0 +1,7 @@
+flask==2.1.2
+SQLAlchemy==1.4.37
+flask-sqlalchemy==2.5.1
+flask-wtf==1.1.1
+email_validator==1.2.1 
+requests==2.28.0
+flask-login==0.6.2

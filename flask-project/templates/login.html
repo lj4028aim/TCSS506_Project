@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container-sm">
+  <form class="row g-3" method="post">
+      {{ form.csrf_token }}
+      <div class="col-auto">
+        {{form.email(class="form-control")}}
+        <small id="emailHelpId" class="form-text text-muted">Enter username</small>
+      </div>
+      <div class="col-auto">
+        {{form.password(class="form-control")}}
+        <small id="passwordHelpId" class="form-text text-muted">Enter password</small>
+      </div>
+      <div class="col-auto"><button type="submit" class="btn btn-primary">Submit</button></div>
+  </form>        
+</div>
+{% endblock content %}

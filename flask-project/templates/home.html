@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+{% block navData %}
+  <li class="nav-item">
+    <!-- <form method="post">
+      <input class="form-inline" type="text" placeholder="Business type" aria-label="Search">
+      <button type="Submit "class="btn btn-primary mb-2">Enter</button>
+    </form> -->
+    <form method="post" class="form-inline">
+      {{ searchForm.csrf_token }}
+      {{ searchForm.searchTerm(class="form-inline", placeholder="Enter business", aria_label="Search") }}
+      <button type="submit" class="btn btn-primary mb-2">Enter</button>
+    </form>
+  </li>
+{% endblock navData %}
+{% block content %}
+<div class="accordion" id="accordionExample">
+    <div class="accordion-item">
+      <h2 class="accordion-header">
+        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+          Map
+        </button>
+      </h2>
+      <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+        <div class="accordion-body">
+          <strong>This is the first item's accordion body.</strong> It is shown by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
+        </div>
+      </div>
+    </div>
+    <div class="accordion-item">
+      <h2 class="accordion-header">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+          Top 10
+        </button>
+      </h2>
+      <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+        <div class="accordion-body">
+            <div id="carouselExampleDark" class="carousel carousel-dark slide" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                  <div class="carousel-item active" data-bs-interval="10000">
+                    <div class="card mb-3" style="max-width: 540px;">
+                        <div class="row g-0">
+                          <div class="col-md-4">
+                            <img src="{{myData[0]['image_url']}}"  style="max-height: 150px;"  class="img-fluid rounded-start" alt="...">
+                          </div>
+                          <div class="col-md-8">
+                            <div class="card-body">
+                              <h5 class="card-title">1 {{myData[0]['name']}}</h5>
+                              <p class="card-text">
+                              {% for line in myData[0]['location']['display_address'] %}
+                              {{ line }}
+                              {% endfor %}
+                              </p>
+                              <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                  </div>
+                  {% for business in myData[1:10] %}
+                  <div class="carousel-item" data-bs-interval="2000">
+                    <div class="card mb-3" style="max-width: 540px;">
+                        <div class="row g-0">
+                          <div class="col-md-4">
+                            <img src="{{business['image_url']}}"  style="max-height: 150px;"  class="img-fluid rounded-start" alt="...">
+                          </div>
+                          <div class="col-md-8">
+                            <div class="card-body">
+                              <h5 class="card-title">{{ loop.index0 +2 }} {{business['name']}}</h5>
+                              <p class="card-text">
+                              {% for line in business['location']['display_address'] %}
+                              {{ line }}
+                              {% endfor %}
+                              </p>
+                              <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                  </div>
+                  {% endfor %}
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="prev">
+                  <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                  <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="next">
+                  <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                  <span class="visually-hidden">Next</span>
+                </button>
+              </div>
+        </div>
+      </div>
+    </div>
+    <div class="accordion-item">
+      <h2 class="accordion-header">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+          Top 50
+        </button>
+      </h2>
+      <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">Rank</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Rating</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for business in myData %}
+                    <tr>
+                        <td class="align-middle">{{ loop.index0 +1 }}</td>
+                        <td class="align-middle"> <img src= {{ business['image_url'] }} class="img-thumbnail" style="max-height:50px;max-width:50px;"> {{ business['name'] }}</td>
+                        <td class="align-middle">{{ business['rating'] }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+ {% endblock content %}
