@@ -1,10 +1,6 @@
 {% extends "base.html" %}
 {% block navData %}
   <li class="nav-item">
-    <!-- <form method="post">
-      <input class="form-inline" type="text" placeholder="Business type" aria-label="Search">
-      <button type="Submit "class="btn btn-primary mb-2">Enter</button>
-    </form> -->
     <form method="post" class="form-inline">
       {{ searchForm.csrf_token }}
       {{ searchForm.searchTerm(class="form-inline", placeholder="Enter business", aria_label="Search") }}

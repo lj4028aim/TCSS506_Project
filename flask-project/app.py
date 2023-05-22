@@ -6,14 +6,19 @@ from openWeather import get_weather
 from forms import LoginForm, SearchForm
 from flask_login import login_user, logout_user, login_required, current_user
 from models import db, loginManager, UserModel
+from datetime import datetime, timezone
+from collections import defaultdict
+import sqlite3
+import os
 
 # Create a new Flask application instance
 app = Flask(__name__)
 app.secret_key="secret"
 
-#database configuration
+# database configuration
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///login.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
 
 #initialize the database
 db.init_app(app)
@@ -45,45 +50,67 @@ def create_table():
     else:
         logout_user()
 
-@app.route('/showWeather', methods=['GET', 'POST'])
+
+@app.route('/home', methods=['GET', 'POST'])
 @login_required
 def showWeather():
     city = session.get('city', 'Tacoma')
-    weather_data = get_weather(city=city)
-    
+    weather_data = get_weather(city=city, units="imperial")
+    with open('weather_data.txt', 'w') as f:
+        f.write(str(weather_data))
+
     # Extract the relevant data from the weather_data response
     weather_forecast = {
         'city': weather_data['city']['name'],
-        'current_temperature': weather_data['list'][0]['main']['temp'],
+        'current_temperature': int(weather_data['list'][0]['main']['temp']),
         'current_icon_url': get_weather_icon_url(weather_data['list'][0]['weather'][0]['icon']),
         'current_description': weather_data['list'][0]['weather'][0]['description'],
-        'tomorrow_temperature': weather_data['list'][8]['main']['temp'],
-        'tomorrow_icon_url': get_weather_icon_url(weather_data['list'][8]['weather'][0]['icon']),
-        'tomorrow_description': weather_data['list'][8]['weather'][0]['description']
+        'forecast': []
     }
-    
-    return render_template('showWeather.html', weather_forecast=weather_forecast)
+
+    # Extract forecast data for the next 5 days
+    for i in range(1, 6):
+        # Extract the date and time of the forecast
+        timestamp = weather_data['list'][i]['dt']
+        # Convert the Unix timestamp to a datetime object
+        dt = datetime.utcfromtimestamp(timestamp)
+        # Adjust the timezone to the user's timezone (if needed)
+        dt = dt.replace(tzinfo=timezone.utc).astimezone(tz=None)
+        # Get the day of the week as a string (e.g., "Monday", "Tuesday", etc.)
+        day_name = dt.strftime("%A")
+        forecast_data = {
+            'day': day_name,
+            'weather_condition': weather_data['list'][i]['weather'][0]['description'],
+            'precipitation': weather_data['list'][i]['pop'],
+            'temperature': int(weather_data['list'][i]['main']['temp'])
+        }
+        weather_forecast['forecast'].append(forecast_data)
+        
+
+    return render_template('home.html', weather_forecast=weather_forecast)
+
 
 def get_weather_icon_url(icon_code: str) -> str:
     """Returns the URL of the weather icon image based on the icon code."""
     return f"http://openweathermap.org/img/w/{icon_code}.png"
 
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     form=LoginForm()
-    print(form.email.data)
-    print(form.password.data)
+    # print(form.email.data)
+    # print(form.password.data)
     if request.method == 'POST':
         if not form.validate_on_submit():
             flash('Please enter a valid email and password')
             return render_template('login.html',form=form)
         user = UserModel.query.filter_by(email = form.email.data ).first()
         if user is None:
-            print('User not found')
+            # print('User not found')
             flash('Please enter a valid email')
             return render_template('login.html',form=form)
         if not user.checkPassword(form.password.data):
-            print('Incorrect password')
+            # print('Incorrect password')
             flash('Please enter a valid password')
             return render_template('login.html',form=form)
         login_user(user)

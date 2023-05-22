@@ -22,8 +22,6 @@
             font-family: 'Montserrat', sans-serif;
             background-color: var(--body)
         }
-
-
     </style>
     <title>Weather Music App</title>
   </head>
@@ -33,13 +31,12 @@
         <div class="d-flex" style="height:100vh">
             <section class="w-100 m-auto p-3 text-center" style="max-width:330px;">
                 <form method="post">
+                    {{ form.csrf_token }}
                     <img class="mb-4" src="https://getbootstrap.com/docs/4.0/assets/brand/bootstrap-solid.svg" alt="" width="72" height="72">
                     <h1 class="h3 mb-3 font-weight-normal text-white">Please sign in</h1>
                     <div class="text-start text-secondary">
-                        <label for="inputEmail" class="sr-only">Email address</label>
-                        <input type="email" id="inputEmail" class="form-control mb-3" placeholder="Email address" required="" autofocus="">
-                        <label for="inputPassword" class="sr-only">Password</label>
-                        <input type="password" id="inputPassword" class="form-control mb-3" placeholder="Password" required="">
+                        {{ form.email(class_="form-control mb-3", placeholder="Email address", autofocus=True) }}
+                        {{ form.password(class_="form-control mb-3", placeholder="Password") }}
                     </div>
                     <button class="btn btn-md btn-primary btn-block w-100 mt-2" type="submit">Sign in</button>
                 </form>

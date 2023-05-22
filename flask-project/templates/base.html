@@ -47,84 +47,62 @@
               <input class="form-control me-2" type="search" placeholder="Enter City or Zipcode" aria-label="Enter City or Zipcode">
               <button class="btn btn-outline-success" type="submit"><i class="bi bi-search"></i></button>
             </form>
-            <button class="btn btn-outline-secondary">Sign up</button>
+            <a class="btn btn-outline-secondary" href="{{ url_for('logout') }}">Logout</a>
           </div>
         </div>
       </nav>
     </header>
 
     <main>
-      <!-- Today's Weather-->
+      <!-- Today's Weather -->
       <section class="mt-3 mb-3">
-          <div class="container">
-              <div class="card bg-dark text-white" style="max-height: 30vh; overflow:hidden">
-                <img src="https://images.unsplash.com/photo-1496450681664-3df85efbd29f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=870&q=80" class="card-img" alt="..." style="object-fit: contain;">
-                <div class="card-img-overlay">
-                  <h1 class="card-title text-white">70</h1>
-                  <p class="card-text">City, State</p>
-                  <p class="card-text">Last updated 3 mins ago</p>
-                </div>
-              </div>
+        <div class="container">
+          <div class="card bg-dark text-white" style="max-height: 30vh; overflow:hidden">
+            <img src="https://images.unsplash.com/photo-1496450681664-3df85efbd29f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=870&q=80" class="card-img" alt="..." style="object-fit: contain;">
+            <div class="card-img-overlay">
+              <h1 class="card-title text-white">{{ weather_forecast.current_temperature }}</h1>
+              <p class="card-text">{{ weather_forecast.city }}, {{ weather_forecast.state }}</p>
+              <p class="card-text">Last updated {{ weather_forecast.last_updated }}</p>
+            </div>
           </div>
+        </div>
       </section>
 
       <!-- Forecast and Daily Song -->
       <section class="mt-3 mb-3">
-          <div class="container">
-            <div class="row gy-3">
-              <!-- Weekly Forecast -->
-              <div class="col-lg-6">
-                <div class="card h-100 bg-dark text-white">
-                  <div class="card-body">
-                    <h5 class="card-title text-white">Forecast</h5>
-                    <p class="card-text">5-day</p>
-                    <div class="table-responsive">
-                      <table class="table table-borderless text-white">
-                        <thead>
-                          <tr>
-                            <th scope="col">Day</th>
-                            <th scope="col">Weather Condition</th>
-                            <th scope="col">Precipitation</th>
-                            <th scope="col">Temperature</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr>
-                            <th scope="row">Saturday</th>
-                            <td>Partly Cloudy</td>
-                            <td>0%</td>
-                            <td>73°</td>
-                          </tr>
-                          <tr>
-                            <th scope="row">Sunday</th>
-                            <td>Partly Cloudy</td>
-                            <td>0%</td>
-                            <td>73°</td>
-                          </tr>
-                          <tr>
-                            <th scope="row">Monday</th>
-                            <td>Partly Cloudy</td>
-                            <td>0%</td>
-                            <td>73°</td>
-                          </tr>
-                          <tr>
-                            <th scope="row">Tuesday</th>
-                            <td>Partly Cloudy</td>
-                            <td>0%</td>
-                            <td>73°</td>
-                          </tr>
-                          <tr>
-                            <th scope="row">Wednesday</th>
-                            <td>Partly Cloudy</td>
-                            <td>0%</td>
-                            <td>73°</td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
+        <div class="container">
+          <div class="row gy-3">
+            <!-- Weekly Forecast -->
+            <div class="col-lg-6">
+              <div class="card h-100 bg-dark text-white">
+                <div class="card-body">
+                  <h5 class="card-title text-white">Forecast</h5>
+                  <p class="card-text">5-day</p>
+                  <div class="table-responsive">
+                    <table class="table table-borderless text-white">
+                      <thead>
+                        <tr>
+                          <th scope="col">Day</th>
+                          <th scope="col">Weather Condition</th>
+                          <th scope="col">Precipitation</th>
+                          <th scope="col">Temperature</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for day in weather_forecast.forecast %}
+                        <tr>
+                          <th scope="row">{{ day.day }}</th>
+                          <td>{{ day.weather_condition }}</td>
+                          <td>{{ '%.0f' % (day.precipitation * 100) }}%</td>
+                          <td>{{ day.temperature }}°F</td>
+                        </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
                   </div>
                 </div>
               </div>
+            </div>
 
               <!-- Featured Daily Song -->
               <div class="col-lg-6">
