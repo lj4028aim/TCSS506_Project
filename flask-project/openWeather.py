@@ -21,6 +21,6 @@ def get_cur_weather(term="", city="Tacoma", state="Washington", country="US", un
 if __name__ == '__main__':
     cur_weather_data = get_cur_weather()
     weather_data = get_weather()
-    print(cur_weather_data)
+    # print(cur_weather_data)
     # print(weather_data)
     

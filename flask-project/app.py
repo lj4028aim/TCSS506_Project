@@ -6,7 +6,7 @@ from openWeather import get_cur_weather, get_weather
 from forms import LoginForm, SearchForm
 from flask_login import login_user, logout_user, login_required, current_user
 from models import db, loginManager, UserModel
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from collections import defaultdict
 import sqlite3
 import os
@@ -54,6 +54,10 @@ def create_table():
 @app.route('/home', methods=['GET', 'POST'])
 @login_required
 def showWeather():
+    """
+    Show the weather forecast for a given city, state, and country."""
+
+    # searchForm = SearchForm()
     cur_weather_data = get_cur_weather(city="Tacoma", state="Washington", country="US", units="imperial")
     weather_data = get_weather(city="Tacoma", state="Washington", country="US", units="imperial")
     
@@ -85,22 +89,27 @@ def showWeather():
         'forecast': []
     }
 
-    # Extract forecast data for the next 5 days
-    for i in range(0, 5):
-        # Extract the date and time of the forecast
-        timestamp = weather_data['list'][i+1]['dt']
-        # Convert the Unix timestamp to a datetime object
-        dt = datetime.fromtimestamp(timestamp)
-        # Get the day of the week as a string (e.g., "Monday", "Tuesday", etc.)
-        day_name = dt.strftime("%A")
-        forecast_data = {
-            'day': day_name,
-            'weather_condition': weather_data['list'][i+1]['weather'][0]['description'],
-            'precipitation': weather_data['list'][i+1]['pop'],
-            'temperature': int(weather_data['list'][i+1]['main']['temp'])
-        }
-        weather_forecast['forecast'].append(forecast_data)
-    
+    # Extract forecast data for the next 5 days at the middle of the day
+    for i in range(1, 6):
+        # Get next day's date for the next 5 days
+        next_day = time_now.date() + timedelta(days=i)
+
+        # Set the time to 12:00 pm
+        target_time = datetime.combine(next_day, datetime.strptime("12:00 PM", "%I:%M %p").time())
+        # Extract the forecast data for the next 5 days at 12:00 pm
+        for j in range(len(wforecast)):
+            if str(target_time) == wforecast[j]['dt_txt']:
+                timestamp = wforecast[j]['dt']
+                dt = datetime.fromtimestamp(timestamp)
+                day_name = dt.strftime("%A")
+                forecast_data = {
+                    'day': day_name,
+                    'weather_condition': wforecast[j]['weather'][0]['description'],
+                    'precipitation': wforecast[j]['pop'],
+                    'temperature': int(wforecast[j]['main']['temp'])
+                }
+                weather_forecast['forecast'].append(forecast_data)
+   
     return render_template('home.html', weather_forecast=weather_forecast)
 
 
