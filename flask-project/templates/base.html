@@ -60,9 +60,12 @@
           <div class="card bg-dark text-white" style="max-height: 30vh; overflow:hidden">
             <img src="https://images.unsplash.com/photo-1496450681664-3df85efbd29f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=870&q=80" class="card-img" alt="..." style="object-fit: contain;">
             <div class="card-img-overlay">
-              <h1 class="card-title text-white">{{ weather_forecast.current_temperature }}</h1>
-              <p class="card-text">{{ weather_forecast.city }}, {{ weather_forecast.state }}</p>
-              <p class="card-text">Last updated {{ weather_forecast.last_updated }}</p>
+              <h1 class="card-title text-white">{{ weather_forecast.current_temperature }}°F</h1>
+              <p class="card-text">{{ weather_forecast.city }}, {{ weather_forecast.state_country[0] }}, {{ weather_forecast.state_country[1] }}</p>
+              <p class="card-text">{{ weather_forecast.current_description }}</p>
+              <p class="card-text">Today's Sunrise: {{ weather_forecast.today_sunrise }}</p>
+              <p class="card-text">Today's Sunset: {{ weather_forecast.today_sunset }}</p>
+              <p class="card-text">Last updated {{ weather_forecast.last_updated }} minutes ago.</p>
             </div>
           </div>
         </div>

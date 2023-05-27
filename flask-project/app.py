@@ -2,7 +2,7 @@
 # Import the necessary modules
 
 from flask import Flask, render_template, request, redirect, url_for, session, flash
-from openWeather import get_weather
+from openWeather import get_cur_weather, get_weather
 from forms import LoginForm, SearchForm
 from flask_login import login_user, logout_user, login_required, current_user
 from models import db, loginManager, UserModel
@@ -54,45 +54,80 @@ def create_table():
 @app.route('/home', methods=['GET', 'POST'])
 @login_required
 def showWeather():
-    city = session.get('city', 'Tacoma')
-    weather_data = get_weather(city=city, units="imperial")
+    cur_weather_data = get_cur_weather(city="Tacoma", state="Washington", country="US", units="imperial")
+    weather_data = get_weather(city="Tacoma", state="Washington", country="US", units="imperial")
+    
+    # Save the weather_data response to a file for debugging purposes
     with open('weather_data.txt', 'w') as f:
         f.write(str(weather_data))
 
-    # Extract the relevant data from the weather_data response
+    with open('cur_weather_data.txt', 'w') as f1:
+        f1.write(str(cur_weather_data))
+
+    # Extract the list of weather forecasts from the weather_data response
+    wforecast = weather_data['list']
+    
+    # Calculate the number of minutes since the last update
+    time_now = datetime.now()
+    last_time_updated = datetime.fromtimestamp(cur_weather_data['dt'])
+    last_updated = int((time_now - last_time_updated).total_seconds() // 60)
+
+    # Extract current weather data from cur_weather_data response
     weather_forecast = {
-        'city': weather_data['city']['name'],
-        'current_temperature': int(weather_data['list'][0]['main']['temp']),
-        'current_icon_url': get_weather_icon_url(weather_data['list'][0]['weather'][0]['icon']),
-        'current_description': weather_data['list'][0]['weather'][0]['description'],
+        'city': cur_weather_data['name'],
+        'state_country': get_state_and_country_by_id(cur_weather_data['id']),
+        'current_temperature': int(cur_weather_data['main']['temp']),
+        'current_icon_url': get_weather_icon_url(cur_weather_data['weather'][0]['icon']),
+        'current_description': cur_weather_data['weather'][0]['description'],
+        "today_sunrise": datetime.fromtimestamp(cur_weather_data['sys']['sunrise']).time().strftime("%H:%M"),
+        "today_sunset": datetime.fromtimestamp(cur_weather_data['sys']['sunset']).time().strftime("%H:%M"),
+        'last_updated': last_updated,
         'forecast': []
     }
 
     # Extract forecast data for the next 5 days
-    for i in range(1, 6):
+    for i in range(0, 5):
         # Extract the date and time of the forecast
-        timestamp = weather_data['list'][i]['dt']
+        timestamp = weather_data['list'][i+1]['dt']
         # Convert the Unix timestamp to a datetime object
-        dt = datetime.utcfromtimestamp(timestamp)
-        # Adjust the timezone to the user's timezone (if needed)
-        dt = dt.replace(tzinfo=timezone.utc).astimezone(tz=None)
+        dt = datetime.fromtimestamp(timestamp)
         # Get the day of the week as a string (e.g., "Monday", "Tuesday", etc.)
         day_name = dt.strftime("%A")
         forecast_data = {
             'day': day_name,
-            'weather_condition': weather_data['list'][i]['weather'][0]['description'],
-            'precipitation': weather_data['list'][i]['pop'],
-            'temperature': int(weather_data['list'][i]['main']['temp'])
+            'weather_condition': weather_data['list'][i+1]['weather'][0]['description'],
+            'precipitation': weather_data['list'][i+1]['pop'],
+            'temperature': int(weather_data['list'][i+1]['main']['temp'])
         }
         weather_forecast['forecast'].append(forecast_data)
-        
-
+    
     return render_template('home.html', weather_forecast=weather_forecast)
 
 
 def get_weather_icon_url(icon_code: str) -> str:
     """Returns the URL of the weather icon image based on the icon code."""
     return f"http://openweathermap.org/img/w/{icon_code}.png"
+
+
+def get_state_and_country_by_id(city_id):
+    # Connect to the SQLite database
+    conn = sqlite3.connect('citylist.db')
+    cursor = conn.cursor()
+
+    # Execute the query to retrieve the state and country based on the ID
+    query = "SELECT state, country FROM cities WHERE id = ?"
+    cursor.execute(query, (city_id,))
+    result = cursor.fetchone()
+
+    # Close the database connection
+    conn.close()
+
+    # Check if a matching record was found
+    if result is not None:
+        state, country = result
+        return state, country
+    else:
+        return None, None
 
 
 @app.route('/login', methods=['GET', 'POST'])
