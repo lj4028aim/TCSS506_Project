@@ -43,8 +43,8 @@
                 <a class="nav-link active" aria-current="page" href="#">Playlist</a>
               </li>
             </ul>
-            <form class="d-flex me-4">
-              <input class="form-control me-2" type="search" placeholder="Enter City or Zipcode" aria-label="Enter City or Zipcode">
+            <form class="d-flex me-4" action="/home" method="POST">
+              <input class="form-control me-2" type="search" name="location" placeholder="Enter City and State and Country" aria-label="Enter City and State and Country">
               <button class="btn btn-outline-success" type="submit"><i class="bi bi-search"></i></button>
             </form>
             <a class="btn btn-outline-secondary" href="{{ url_for('logout') }}">Logout</a>

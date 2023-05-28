@@ -57,9 +57,24 @@ def showWeather():
     """
     Show the weather forecast for a given city, state, and country."""
 
-    # searchForm = SearchForm()
-    cur_weather_data = get_cur_weather(city="Tacoma", state="Washington", country="US", units="imperial")
-    weather_data = get_weather(city="Tacoma", state="Washington", country="US", units="imperial")
+    if request.method == 'POST':
+        # Get the location from the form
+        location = request.form.get('location')
+        # Split the location into city, state, and country
+        parts = location.split(',')
+        num_parts = len(parts)
+
+        if num_parts >= 1:
+            city = parts[0].strip()
+        # Get the state and country based on the location
+        state, country = get_location(city_name=location)
+
+        # Fetch weather data based on the entered city and State
+        cur_weather_data = get_cur_weather(city=city, state=state, country=country, units="imperial")
+        weather_data = get_weather(city=city, state=state, country=country, units="imperial")
+    else:
+        cur_weather_data = get_cur_weather(city="Tacoma", state="Washington", country="US", units="imperial")
+        weather_data = get_weather(city="Tacoma", state="Washington", country="US", units="imperial")
     
     # Save the weather_data response to a file for debugging purposes
     with open('weather_data.txt', 'w') as f:
@@ -79,7 +94,7 @@ def showWeather():
     # Extract current weather data from cur_weather_data response
     weather_forecast = {
         'city': cur_weather_data['name'],
-        'state_country': get_state_and_country_by_id(cur_weather_data['id']),
+        'state_country': get_location(city_id=cur_weather_data['id']),
         'current_temperature': int(cur_weather_data['main']['temp']),
         'current_icon_url': get_weather_icon_url(cur_weather_data['weather'][0]['icon']),
         'current_description': cur_weather_data['weather'][0]['description'],
@@ -118,14 +133,44 @@ def get_weather_icon_url(icon_code: str) -> str:
     return f"http://openweathermap.org/img/w/{icon_code}.png"
 
 
-def get_state_and_country_by_id(city_id):
+def get_location(city_id=None, city_name=None):
     # Connect to the SQLite database
     conn = sqlite3.connect('citylist.db')
     cursor = conn.cursor()
 
-    # Execute the query to retrieve the state and country based on the ID
-    query = "SELECT state, country FROM cities WHERE id = ?"
-    cursor.execute(query, (city_id,))
+    # Execute the query to retrieve data based on arguments
+    if city_id:
+        query = "SELECT state, country FROM cities WHERE id = ?"
+        cursor.execute(query, (city_id,))
+    elif city_name:
+        parts = city_name.split(',')
+        num_parts = len(parts)
+
+        if num_parts >= 2:
+            city = parts[0].strip()
+            location = parts[1].strip()
+
+            if len(location) == 2:
+                # If it is a state code
+                state = location.strip()
+                country = ""
+                query = "SELECT state, country FROM cities WHERE LOWER(name) = LOWER(?) AND LOWER(state) = LOWER(?)"
+                cursor.execute(query, (city, state))
+            else:
+                # If it is a country code
+                state = ""
+                country = location.strip()
+                query = "SELECT state, country FROM cities WHERE LOWER(name) = LOWER(?) AND LOWER(country) = LOWER(?)"
+                cursor.execute(query, (city, country))
+        elif num_parts == 1:
+            city = parts[0].strip()
+            query = "SELECT state, country FROM cities WHERE LOWER(name) = LOWER(?)"
+            cursor.execute(query, (city,))
+        else:
+            return None, None
+    else:
+        return None, None
+
     result = cursor.fetchone()
 
     # Close the database connection
@@ -137,6 +182,7 @@ def get_state_and_country_by_id(city_id):
         return state, country
     else:
         return None, None
+
 
 
 @app.route('/login', methods=['GET', 'POST'])
