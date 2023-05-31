@@ -6,10 +6,17 @@ from openWeather import get_weather
 from forms import LoginForm, SearchForm
 from flask_login import login_user, logout_user, login_required, current_user
 from models import db, loginManager, UserModel
+import sqlite3
+import spotipy 
+from spotipy.oauth2 import SpotifyClientCredentials
 
 # Create a new Flask application instance
 app = Flask(__name__)
 app.secret_key="secret"
+
+# Configure Spotipy client credentials
+client_credentials_manager = SpotifyClientCredentials(client_id='YOUR_CLIENT_ID', client_secret='YOUR_CLIENT_SECRET')
+sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
 
 #database configuration
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///login.db'
@@ -92,6 +99,52 @@ def login():
         return redirect(url_for('showWeather'))
     # This function will be called when someone accesses the root URL
     return render_template('login.html',form=form)
+@app.route('/api/music', methods=['GET'])
+def get_music():
+    conn = sqlite3.connect('music.db')
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM songs")
+    songs = cursor.fetchall()
+    conn.close()
+
+    music_list = []
+    for song in songs:
+        music = {
+            'id': song[0],
+            'title': song[1],
+            'artist': song[2],
+            'genre': song[3]
+        }
+
+        # Use Spotipy to search for track information
+        track_info = sp.search(q=f'{song[1]} {song[2]}', type='track', limit=1)
+        if len(track_info['tracks']['items']) > 0:
+            track = track_info['tracks']['items'][0]
+            music['album'] = track['album']['name']
+            music['album_art'] = track['album']['images'][0]['url']
+            music['spotify_url'] = track['external_urls']['spotify']
+
+        music_list.append(music)
+
+    return jsonify(music_list)
+
+@app.route('/api/music', methods=['POST'])
+def add_music():
+    if not request.json or 'title' not in request.json or 'artist' not in request.json or 'genre' not in request.json:
+        return jsonify({'error': 'Invalid request'}), 400
+
+    title = request.json['title']
+    artist = request.json['artist']
+    genre = request.json['genre']
+
+    conn = sqlite3.connect('music.db')
+    cursor = conn.cursor()
+    cursor.execute("INSERT INTO songs (title, artist, genre) VALUES (?, ?, ?)", (title, artist, genre))
+    conn.commit()
+    conn.close()
+
+    return jsonify({'message': 'Music added successfully'}), 201
+
 
 @app.route('/logout')
 def logout():
