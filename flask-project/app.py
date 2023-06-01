@@ -99,6 +99,11 @@ def login():
         return redirect(url_for('showWeather'))
     # This function will be called when someone accesses the root URL
     return render_template('login.html',form=form)
+class User(db.Model):
+    pass
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    pass
 @app.route('/api/music', methods=['GET'])
 def get_music():
     conn = sqlite3.connect('music.db')
