@@ -10,6 +10,7 @@ from datetime import datetime, timezone, timedelta
 from collections import defaultdict
 import sqlite3
 import os
+from flask_bcrypt import Bcrypt
 
 # Create a new Flask application instance
 app = Flask(__name__)
@@ -182,7 +183,35 @@ def get_location(city_id=None, city_name=None):
         return state, country
     else:
         return None, None
+# Define the User model
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(50), unique=True, nullable=False)
+    password = db.Column(db.String(100), nullable=False)
 
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+
+        # Check if the username is already taken
+        if User.query.filter_by(username=username).first():
+            flash('Username already exists')
+            return redirect(url_for('register'))
+
+        # Hash the password before storing it
+        hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
+
+        # Create a new user
+        new_user = User(username=username, password=hashed_password)
+        db.session.add(new_user)
+        db.session.commit()
+
+        flash('Registration successful. Please log in.')
+        return redirect(url_for('login'))
+
+    return render_template('register.html')
 
 
 @app.route('/login', methods=['GET', 'POST'])
