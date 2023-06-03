@@ -10,7 +10,7 @@ from datetime import datetime, timezone, timedelta
 from collections import defaultdict
 import sqlite3
 import os
-# from flask_bcrypt import Bcrypt
+from bcrypt import hashpw, gensalt
 
 # Create a new Flask application instance
 app = Flask(__name__)
@@ -188,29 +188,24 @@ def get_location(city_id=None, city_name=None):
         return state, country
     else:
         return None, None
-# Define the User model
-class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(50), unique=True, nullable=False)
-    password = db.Column(db.String(100), nullable=False)
+
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
-        username = request.form['username']
+        email = request.form['email']
         password = request.form['password']
 
         # Check if the username is already taken
-        if User.query.filter_by(username=username).first():
+        if UserModel.query.filter_by(email=email).first():
             flash('Username already exists')
             return redirect(url_for('register'))
 
         # Hash the password before storing it
-        hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
-
-        # Create a new user
-        new_user = User(username=username, password=hashed_password)
-        db.session.add(new_user)
+        user = UserModel()
+        user.setPassword(password)
+        user.email = email
+        db.session.add(user)
         db.session.commit()
 
         flash('Registration successful. Please log in.')
@@ -238,8 +233,8 @@ def login():
             flash('Please enter a valid password')
             return render_template('login.html',form=form)
         login_user(user)
-        session['email'] = form.email.data
-        session['city'] = 'Seattle'
+        # session['email'] = form.email.data
+        # session['city'] = 'Seattle'
         return redirect(url_for('showWeather'))
     # This function will be called when someone accesses the root URL
     return render_template('login.html',form=form)
@@ -250,7 +245,7 @@ def logout():
     session.pop('email', None)
     session.pop('city', None)
     # This function will be called when someone accesses the root URL
-    return redirect(url_for('login'))
+    return redirect(url_for('showLanding'))
 
 # Run the application if this script is being run directly
 if __name__ == '__main__':
