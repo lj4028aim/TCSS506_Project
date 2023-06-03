@@ -10,7 +10,7 @@ from datetime import datetime, timezone, timedelta
 from collections import defaultdict
 import sqlite3
 import os
-from flask_bcrypt import Bcrypt
+# from flask_bcrypt import Bcrypt
 
 # Create a new Flask application instance
 app = Flask(__name__)
@@ -51,6 +51,11 @@ def create_table():
     else:
         logout_user()
 
+
+@app.route('/')
+def showLanding():
+    """Show landing page"""
+    return render_template('landing.html')
 
 @app.route('/home', methods=['GET', 'POST'])
 @login_required
