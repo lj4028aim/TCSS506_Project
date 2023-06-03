@@ -1,121 +1,159 @@
 {% extends "base.html" %}
-{% block navData %}
-  <li class="nav-item">
-    <form method="post" class="form-inline">
-      {{ searchForm.csrf_token }}
-      {{ searchForm.searchTerm(class="form-inline", placeholder="Enter business", aria_label="Search") }}
-      <button type="submit" class="btn btn-primary mb-2">Enter</button>
-    </form>
-  </li>
-{% endblock navData %}
-{% block content %}
-<div class="accordion" id="accordionExample">
-    <div class="accordion-item">
-      <h2 class="accordion-header">
-        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
-          Map
-        </button>
-      </h2>
-      <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
-        <div class="accordion-body">
-          <strong>This is the first item's accordion body.</strong> It is shown by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
-        </div>
-      </div>
-    </div>
-    <div class="accordion-item">
-      <h2 class="accordion-header">
-        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-          Top 10
-        </button>
-      </h2>
-      <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
-        <div class="accordion-body">
-            <div id="carouselExampleDark" class="carousel carousel-dark slide" data-bs-ride="carousel">
-                <div class="carousel-inner">
-                  <div class="carousel-item active" data-bs-interval="10000">
-                    <div class="card mb-3" style="max-width: 540px;">
-                        <div class="row g-0">
-                          <div class="col-md-4">
-                            <img src="{{myData[0]['image_url']}}"  style="max-height: 150px;"  class="img-fluid rounded-start" alt="...">
-                          </div>
-                          <div class="col-md-8">
-                            <div class="card-body">
-                              <h5 class="card-title">1 {{myData[0]['name']}}</h5>
-                              <p class="card-text">
-                              {% for line in myData[0]['location']['display_address'] %}
-                              {{ line }}
-                              {% endfor %}
-                              </p>
-                              <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                  </div>
-                  {% for business in myData[1:10] %}
-                  <div class="carousel-item" data-bs-interval="2000">
-                    <div class="card mb-3" style="max-width: 540px;">
-                        <div class="row g-0">
-                          <div class="col-md-4">
-                            <img src="{{business['image_url']}}"  style="max-height: 150px;"  class="img-fluid rounded-start" alt="...">
-                          </div>
-                          <div class="col-md-8">
-                            <div class="card-body">
-                              <h5 class="card-title">{{ loop.index0 +2 }} {{business['name']}}</h5>
-                              <p class="card-text">
-                              {% for line in business['location']['display_address'] %}
-                              {{ line }}
-                              {% endfor %}
-                              </p>
-                              <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                  </div>
-                  {% endfor %}
-                </div>
-                <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="prev">
-                  <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                  <span class="visually-hidden">Previous</span>
-                </button>
-                <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="next">
-                  <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                  <span class="visually-hidden">Next</span>
-                </button>
-              </div>
-        </div>
-      </div>
-    </div>
-    <div class="accordion-item">
-      <h2 class="accordion-header">
-        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-          Top 50
-        </button>
-      </h2>
-      <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
-        <div class="table-responsive">
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th scope="col">Rank</th>
-                        <th scope="col">Name</th>
-                        <th scope="col">Rating</th>
-                    </tr>
-                </thead>
-                <tbody>
-                {% for business in myData %}
-                    <tr>
-                        <td class="align-middle">{{ loop.index0 +1 }}</td>
-                        <td class="align-middle"> <img src= {{ business['image_url'] }} class="img-thumbnail" style="max-height:50px;max-width:50px;"> {{ business['name'] }}</td>
-                        <td class="align-middle">{{ business['rating'] }}</td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-        </div>
-      </div>
-    </div>
-  </div>
 
- {% endblock content %}
+{% block content %}
+<div class="container">
+  <!-- Today's Weather -->
+  <section class="mt-3 mb-3">
+    <div class="container">
+      <div class="card bg-dark text-white" style="max-height: 30vh; overflow:hidden">
+        <img src="https://images.unsplash.com/photo-1496450681664-3df85efbd29f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=870&q=80" class="card-img" alt="..." style="object-fit: contain;">
+        <div class="card-img-overlay">
+          <h1 class="card-title text-white">{{ weather_forecast.current_temperature }}°F</h1>
+          <p class="card-text">{{ weather_forecast.city }}, {{ weather_forecast.state_country[0] }}, {{ weather_forecast.state_country[1] }}</p>
+          <p class="card-text">{{ weather_forecast.current_description }}</p>
+          <p class="card-text">Today's Sunrise: {{ weather_forecast.today_sunrise }}</p>
+          <p class="card-text">Today's Sunset: {{ weather_forecast.today_sunset }}</p>
+          <p class="card-text">Last updated {{ weather_forecast.last_updated }} minutes ago.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Forecast and Daily Song -->
+  <section class="mt-3 mb-3">
+    <div class="container">
+      <div class="row gy-3">
+        <!-- Weekly Forecast -->
+        <div class="col-lg-6">
+          <div class="card h-100 bg-dark text-white">
+            <div class="card-body">
+              <h5 class="card-title text-white">Next 5-days Weather Forecast</h5>
+              <br>
+              <div class="table-responsive">
+                <table class="table table-borderless text-white">
+                  <thead>
+                    <tr>
+                      <th scope="col">Day</th>
+                      <th scope="col">Weather Condition</th>
+                      <th scope="col">Precipitation</th>
+                      <th scope="col">Temperature</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for day in weather_forecast.forecast %}
+                    <tr>
+                      <th scope="row">{{ day.day }}</th>
+                      <td>{{ day.weather_condition }}</td>
+                      <td>{{ '%.0f' % (day.precipitation * 100) }}%</td>
+                      <td>{{ day.temperature }}°F</td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+          <!-- Featured Daily Song -->
+          <div class="col-lg-6">
+            <div class="card h-100 bg-dark text-white">
+              <img src="https://images.unsplash.com/photo-1619983081593-e2ba5b543168?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=870&q=80" class="card-img" alt="...">
+              <div class="card-img-overlay">
+                <h2 class="card-title text-white">Song Title</h2>
+                <h3 class="card-subtitle mb-2 text-white">Album</h3>
+                <p class="card-text">Artist Name</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+  </section>
+
+  <!-- Recommended Playlist-->
+  <section class="mt-3 mb-3">
+    <div class="container">
+      <div class="card bg-dark">
+        <div class="card-body">
+          <h5 class="card-title text-white">Recommended Playlist</h5>
+          <div class="table-responsive">
+            <table class="table table-borderless">
+              <thead class="text-white">
+                <tr>
+                  <th scope="col">Title</th>
+                  <th scope="col">Plays</th>
+                  <th scope="col">Album</th>
+                  <th scope="col">Duration</th>
+                </tr>
+              </thead>
+              <tbody class="text-white">
+                <tr>
+                  <th scope="row" style="display:flex;">
+                    <img src="https://images.unsplash.com/photo-1573767291321-c0af2eaf5266?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=836&q=80" class="rounded" alt="" width="60px" height="60px">
+                    <div class="p-2">
+                      <h6 class="text-white">Song Title</h6>
+                      <p>Artist</p>
+                    </div>
+                  </th>
+                  <td>80,821,000</td>
+                  <td>Album Name</td>
+                  <td>3:20</td>
+                </tr>=
+                <tr>
+                  <th scope="row" style="display:flex;">
+                    <img src="https://images.unsplash.com/photo-1573767291321-c0af2eaf5266?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=836&q=80" class="rounded" alt="" width="60px" height="60px">
+                    <div class="p-2">
+                      <h6 class="text-white">Song Title</h6>
+                      <p>Artist</p>
+                    </div>
+                  </th>
+                  <td>80,821,000</td>
+                  <td>Album Name</td>
+                  <td>3:20</td>
+                </tr>=
+                <tr>
+                  <th scope="row" style="display:flex;">
+                    <img src="https://images.unsplash.com/photo-1573767291321-c0af2eaf5266?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=836&q=80" class="rounded" alt="" width="60px" height="60px">
+                    <div class="p-2">
+                      <h6 class="text-white">Song Title</h6>
+                      <p>Artist</p>
+                    </div>
+                  </th>
+                  <td>80,821,000</td>
+                  <td>Album Name</td>
+                  <td>3:20</td>
+                </tr>=
+                <tr>
+                  <th scope="row" style="display:flex;">
+                    <img src="https://images.unsplash.com/photo-1573767291321-c0af2eaf5266?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=836&q=80" class="rounded" alt="" width="60px" height="60px">
+                    <div class="p-2">
+                      <h6 class="text-white">Song Title</h6>
+                      <p>Artist</p>
+                    </div>
+                  </th>
+                  <td>80,821,000</td>
+                  <td>Album Name</td>
+                  <td>3:20</td>
+                </tr>=
+                <tr>
+                  <th scope="row" style="display:flex;">
+                    <img src="https://images.unsplash.com/photo-1573767291321-c0af2eaf5266?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=836&q=80" class="rounded" alt="" width="60px" height="60px">
+                    <div class="p-2">
+                      <h6 class="text-white">Song Title</h6>
+                      <p>Artist</p>
+                    </div>
+                  </th>
+                  <td>80,821,000</td>
+                  <td>Album Name</td>
+                  <td>3:20</td>
+                </tr>=
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+{% endblock content %}
