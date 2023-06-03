@@ -9,3 +9,7 @@ class LoginForm(FlaskForm):
     
 class SearchForm(FlaskForm):
     searchTerm = StringField('searchTerm', validators=[DataRequired(), Length(max=50)])
+
+class RegisterForm(FlaskForm):
+    email = StringField('Email', validators=[DataRequired(), Email(message='Invalid email'), Length(max=50)])
+    password = PasswordField('Password', validators=[DataRequired(), Length(min=8, max=80)])
