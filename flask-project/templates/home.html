@@ -58,11 +58,15 @@
           <!-- Featured Daily Song -->
           <div class="col-lg-6">
             <div class="card h-100 bg-dark text-white">
-              <img src="https://images.unsplash.com/photo-1619983081593-e2ba5b543168?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=870&q=80" class="card-img" alt="...">
+              <img src="{{ feature_daily_song_data['album_images'][0] }}" class="card-img" alt="...">
               <div class="card-img-overlay">
-                <h2 class="card-title text-white">Song Title</h2>
-                <h3 class="card-subtitle mb-2 text-white">Album</h3>
-                <p class="card-text">Artist Name</p>
+                <h2 class="card-title text-white">{{ feature_daily_song_data['song_names'][0] }}</h2>
+                <h3 class="card-subtitle mb-2 text-white">{{ feature_daily_song_data['album_names'][0] }}</h3>
+                <p>
+                  {% for artist in feature_daily_song_data['artist_names'][0] %}
+                    {{ artist }}{% if not loop.last %}, {% endif %}
+                  {% endfor %}
+                </p>
               </div>
             </div>
           </div>
@@ -70,7 +74,7 @@
       </div>
   </section>
 
-  <!-- Recommended Playlist-->
+  <!-- Recommended Playlist -->
   <section class="mt-3 mb-3">
     <div class="container">
       <div class="card bg-dark">
@@ -81,72 +85,30 @@
               <thead class="text-white">
                 <tr>
                   <th scope="col">Title</th>
-                  <th scope="col">Plays</th>
+                  <th scope="col">Popularity</th>
                   <th scope="col">Album</th>
                   <th scope="col">Duration</th>
                 </tr>
               </thead>
               <tbody class="text-white">
+                {% for i in range(5) %}
                 <tr>
                   <th scope="row" style="display:flex;">
-                    <img src="https://images.unsplash.com/photo-1573767291321-c0af2eaf5266?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=836&q=80" class="rounded" alt="" width="60px" height="60px">
+                    <img src="{{ top5_song_data['album_images'][i] }}" class="rounded" alt="" width="60px" height="60px">
                     <div class="p-2">
-                      <h6 class="text-white">Song Title</h6>
-                      <p>Artist</p>
+                      <h6 class="text-white">{{ top5_song_data['song_names'][i] }}</h6>
+                      <p>
+                        {% for artist in top5_song_data['artist_names'][i] %}
+                          {{ artist }}{% if not loop.last %}, {% endif %}
+                        {% endfor %}
+                      </p>
                     </div>
                   </th>
-                  <td>80,821,000</td>
-                  <td>Album Name</td>
-                  <td>3:20</td>
-                </tr>=
-                <tr>
-                  <th scope="row" style="display:flex;">
-                    <img src="https://images.unsplash.com/photo-1573767291321-c0af2eaf5266?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=836&q=80" class="rounded" alt="" width="60px" height="60px">
-                    <div class="p-2">
-                      <h6 class="text-white">Song Title</h6>
-                      <p>Artist</p>
-                    </div>
-                  </th>
-                  <td>80,821,000</td>
-                  <td>Album Name</td>
-                  <td>3:20</td>
-                </tr>=
-                <tr>
-                  <th scope="row" style="display:flex;">
-                    <img src="https://images.unsplash.com/photo-1573767291321-c0af2eaf5266?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=836&q=80" class="rounded" alt="" width="60px" height="60px">
-                    <div class="p-2">
-                      <h6 class="text-white">Song Title</h6>
-                      <p>Artist</p>
-                    </div>
-                  </th>
-                  <td>80,821,000</td>
-                  <td>Album Name</td>
-                  <td>3:20</td>
-                </tr>=
-                <tr>
-                  <th scope="row" style="display:flex;">
-                    <img src="https://images.unsplash.com/photo-1573767291321-c0af2eaf5266?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=836&q=80" class="rounded" alt="" width="60px" height="60px">
-                    <div class="p-2">
-                      <h6 class="text-white">Song Title</h6>
-                      <p>Artist</p>
-                    </div>
-                  </th>
-                  <td>80,821,000</td>
-                  <td>Album Name</td>
-                  <td>3:20</td>
-                </tr>=
-                <tr>
-                  <th scope="row" style="display:flex;">
-                    <img src="https://images.unsplash.com/photo-1573767291321-c0af2eaf5266?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=836&q=80" class="rounded" alt="" width="60px" height="60px">
-                    <div class="p-2">
-                      <h6 class="text-white">Song Title</h6>
-                      <p>Artist</p>
-                    </div>
-                  </th>
-                  <td>80,821,000</td>
-                  <td>Album Name</td>
-                  <td>3:20</td>
-                </tr>=
+                  <td>{{ top5_song_data['popularity'][i] }}</td>
+                  <td>{{ top5_song_data['album_names'][i] }}</td>
+                  <td>{{ top5_song_data['durations'][i] }}</td>
+                </tr>
+                {% endfor %}
               </tbody>
             </table>
           </div>

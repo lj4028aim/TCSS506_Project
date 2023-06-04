@@ -28,15 +28,3 @@ if __name__ == "__main__":
 
     # Retrieve playlist data
     playlist_data = retrieve_playlist_data(playlist_id)
-    # print(playlist_data['description'])
-    # print(len(playlist_data['tracks']['items'][i]['track']['artists']))
-    for i in range(10):
-        print(playlist_data['tracks']['items'][i]['track']['name'])
-        for j in range(len(playlist_data['tracks']['items'][i]['track']['artists'])):
-            print(playlist_data['tracks']['items'][i]['track']['artists'][j]['name'])
-        print(playlist_data['tracks']['items'][i]['track']['popularity'])
-        print(playlist_data['tracks']['items'][i]['track']['album']['images'][0]['url'])
-        print(playlist_data['tracks']['items'][i]['track']['album']['name'])
-        print(playlist_data['tracks']['items'][i]['track']['duration_ms'])
-        print(playlist_data['tracks']['items'][i]['track']['album']['release_date'])
-        print("---------------------------------")

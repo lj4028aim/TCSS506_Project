@@ -8,10 +8,7 @@ from forms import LoginForm
 from flask_login import login_user, logout_user, login_required
 from models import db, loginManager, UserModel
 from datetime import datetime, timedelta
-# from collections import defaultdict
 import sqlite3
-import os
-# from bcrypt import hashpw, gensalt
 
 # Create a new Flask application instance
 app = Flask(__name__)
@@ -57,6 +54,7 @@ def create_table():
 def showLanding():
     """Show landing page"""
     return render_template('landing.html')
+
 
 @app.route('/home', methods=['GET', 'POST'])
 @login_required
@@ -131,8 +129,10 @@ def showWeather():
                     'temperature': int(wforecast[j]['main']['temp'])
                 }
                 weather_forecast['forecast'].append(forecast_data)
-   
-    return render_template('home.html', weather_forecast=weather_forecast)
+    
+    top5_song_data = get_playlist_data(datasize=5)
+    feature_daily_song_data = get_playlist_data(datasize=1)
+    return render_template('home.html', weather_forecast=weather_forecast, top5_song_data=top5_song_data, feature_daily_song_data=feature_daily_song_data)
 
 
 def get_weather_icon_url(icon_code: str) -> str:
@@ -191,8 +191,7 @@ def get_location(city_id=None, city_name=None):
         return None, None
 
 
-@app.route('/playlist')
-def playlist_route():
+def get_playlist_data(datasize=None):
     playlist_id = '37i9dQZEVXbLp5XoPON0wI'
     playlist_data = retrieve_playlist_data(playlist_id)
 
@@ -207,7 +206,7 @@ def playlist_route():
         'release_dates': []
     }
 
-    for i in range(50):
+    for i in range(datasize):
         track = playlist_data['tracks']['items'][i]['track']
         song_data['song_names'].append(track['name'])
 
@@ -226,47 +225,15 @@ def playlist_route():
         duration_formatted = f"{duration_min:02d}:{duration_sec:02d}"
         song_data['durations'].append(duration_formatted)
         song_data['release_dates'].append(track['album']['release_date'])
-    print(song_data)
+    
+    return song_data
+
+
+@app.route('/playlist')
+def playlist_route():
+    song_data = get_playlist_data(datasize=50)
+    
     return render_template('playlist.html', song_data=song_data)
-
-
-# @app.route('/music')
-# def showMusic():
-#     playlist_id = '37i9dQZEVXbLp5XoPON0wI'
-#     playlist_data = retrieve_playlist_data(playlist_id)
-
-#     # Prepare the data for rendering in the template
-#     top5_song_data = {
-#         'song_names': [],
-#         'artist_names': [],
-#         'popularity': [],
-#         'album_images': [],
-#         'album_names': [],
-#         'durations': [],
-#         'release_dates': []
-#     }
-
-#     for i in range(5):
-#         track = playlist_data['tracks']['items'][i]['track']
-#         top5_song_data['song_names'].append(track['name'])
-
-#         artist_names = []
-#         for j in range(len(track['artists'])):
-#             artist_names.append(track['artists'][j]['name'])
-#         top5_song_data['artist_names'].append(artist_names)
-
-#         top5_song_data['popularity'].append(track['popularity'])
-#         top5_song_data['album_images'].append(track['album']['images'][0]['url'])
-#         top5_song_data['album_names'].append(track['album']['name'])
-#         # Convert duration from ms to mm:ss format
-#         duration_ms = track['duration_ms']
-#         duration_min = duration_ms // 60000
-#         duration_sec = (duration_ms % 60000) // 1000
-#         duration_formatted = f"{duration_min:02d}:{duration_sec:02d}"
-#         top5_song_data['durations'].append(duration_formatted)
-#         top5_song_data['release_dates'].append(track['album']['release_date'])
-#     print(top5_song_data)
-#     return render_template('music.html', top5_song_data=top5_song_data)
 
 
 @app.route('/register', methods=['GET', 'POST'])
