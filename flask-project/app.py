@@ -131,7 +131,15 @@ def showWeather():
                 weather_forecast['forecast'].append(forecast_data)
     
     top5_song_data = get_playlist_data(datasize=5)
-    feature_daily_song_data = get_playlist_data(datasize=1)
+    daily_song_data = get_playlist_data(datasize=50)
+    # Get the product of the digits based on the current temperature
+    m_num = multiply_digits(weather_forecast['current_temperature'])
+    feature_daily_song_data = {
+                'album_images': daily_song_data['album_images'][m_num],
+                'song_names': daily_song_data['song_names'][m_num],
+                'album_names': daily_song_data['album_names'][m_num],
+                'artist_names': daily_song_data['artist_names'][m_num],
+                }
     return render_template('home.html', weather_forecast=weather_forecast, top5_song_data=top5_song_data, feature_daily_song_data=feature_daily_song_data)
 
 
@@ -227,6 +235,24 @@ def get_playlist_data(datasize=None):
         song_data['release_dates'].append(track['album']['release_date'])
     
     return song_data
+
+
+def multiply_digits(num):
+    # Get the digits of the number
+    digits = [int(digit) for digit in str(num)]
+
+    # Multiply the digits
+    product = 1
+    for digit in digits:
+        product *= digit
+
+    while product > 50 and len(digits) > 1:
+        digits = [int(digit) for digit in str(product)]
+        product = 1
+        for digit in digits:
+            product *= digit
+
+    return product
 
 
 @app.route('/playlist')

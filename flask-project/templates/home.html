@@ -58,12 +58,12 @@
           <!-- Featured Daily Song -->
           <div class="col-lg-6">
             <div class="card h-100 bg-dark text-white">
-              <img src="{{ feature_daily_song_data['album_images'][0] }}" class="card-img" alt="...">
+              <img src="{{ feature_daily_song_data['album_images'] }}" class="card-img" alt="...">
               <div class="card-img-overlay">
-                <h2 class="card-title text-white">{{ feature_daily_song_data['song_names'][0] }}</h2>
-                <h3 class="card-subtitle mb-2 text-white">{{ feature_daily_song_data['album_names'][0] }}</h3>
+                <h2 class="card-title text-white">{{ feature_daily_song_data['song_names'] }}</h2>
+                <h3 class="card-subtitle mb-2 text-white">{{ feature_daily_song_data['album_names'] }}</h3>
                 <p>
-                  {% for artist in feature_daily_song_data['artist_names'][0] %}
+                  {% for artist in feature_daily_song_data['artist_names'] %}
                     {{ artist }}{% if not loop.last %}, {% endif %}
                   {% endfor %}
                 </p>
