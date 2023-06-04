@@ -5,4 +5,4 @@ COPY requirements.txt requirements.txt
 RUN pip3 install -r requirements.txt
 ENV TZ=America/Los_Angeles
 COPY flask-project /usr/local/bin/flask-project
-#CMD /usr/local/bin/flask-project/app.py
+CMD /usr/local/bin/flask-project/app.py
