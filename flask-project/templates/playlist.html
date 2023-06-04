@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Playlist</title>
+    <!-- Include Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container">
+        <h1>
+            Playlist
+            <a href="{{ url_for('showWeather') }}" class="btn btn-primary">WeatherTunes</a>
+        </h1>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Image</th>
+                    <th>Song</th>
+                    <th>Artists</th>
+                    <th>Album</th>
+                    <th>Popularity</th>
+                    <th>Duration</th>
+                    <th>Release Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for i in range(50) %}
+                <tr>
+                    <td><img src="{{ song_data['album_images'][i] }}" width="64" height="64"></td>
+                    <td>{{ song_data['song_names'][i] }}</td>
+                    <td>
+                        {% for artist in song_data['artist_names'][i] %}
+                            {{ artist }}{% if not loop.last %}, {% endif %}
+                        {% endfor %}
+                    </td>                    
+                    <td>{{ song_data['album_names'][i] }}</td>
+                    <td>{{ song_data['popularity'][i] }}</td>
+                    <td>{{ song_data['durations'][i] }}</td>
+                    <td>{{ song_data['release_dates'][i] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
