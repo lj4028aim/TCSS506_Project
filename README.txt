@@ -32,3 +32,6 @@ playlist.html file is an HTML template that displays a playlist of songs for the
 
 # .gitignore file
 .gitignore file specifies which files and directories should be ignored by Git, such as operating system-generated files, editor-specific files, build artifacts, virtual environment directories, package dependencies, log files, sensitive or environment-specific files, user-specific files, and various file types related to specific programming languages and technologies like Python, Docker, JavaScript, and CSS.
+
+# algorithm to retrieve music dynamically
+The way how this algorithm works is based on current weather temperature and getting the product until the result is equal or less than 50 then use the result as an index to retrieve the song from the list. The algorithm works for both two and three digits number.

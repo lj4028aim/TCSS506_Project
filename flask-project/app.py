@@ -15,7 +15,19 @@ app = Flask(__name__)
 app.secret_key="secret"
 
 # database configuration
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///login.db'
+DBUSER = 'user'
+DBPASS = 'password'
+DBHOST = 'db'
+DBPORT = '5432'
+DBNAME = 'pglogindb'
+
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg2://{user}:{passwd}@{host}:{port}/{db}'.format(
+        user=DBUSER,
+        passwd=DBPASS,
+        host=DBHOST,
+        port=DBPORT,
+        db=DBNAME)
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///login.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 

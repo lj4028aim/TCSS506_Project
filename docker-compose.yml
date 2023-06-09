@@ -1,0 +1,28 @@
+version: '3.1'
+services:
+  web:
+    image: lj4028aim/nginx:gp
+    build: ./nginx
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - app
+  app:
+    image: lj4028aim/flask:gp
+    build: ./flask-project
+    restart: always
+    ports:
+      - "8000:8000"
+    command: gunicorn -b 0.0.0.0:8000 app:app
+  db:
+    image: postgres:10
+    restart: always
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: pglogindb
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
